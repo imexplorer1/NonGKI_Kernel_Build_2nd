@@ -28,6 +28,11 @@ on:
         required: false
         type: boolean
         default: true
+      patch_susfs_nullcheck:
+        description: "SUSFS: NULL-check kfree_rcu(old_bitmap) (test patch)"
+        required: false
+        type: boolean
+        default: false
       patch_rekernel:
         description: "Apply Re:Kernel"
         required: false
@@ -95,6 +100,11 @@ on:
         required: false
         type: boolean
         default: true
+      patch_susfs_nullcheck:
+        description: "SUSFS：给 kfree_rcu(old_bitmap) 加判空（测试补丁）"
+        required: false
+        type: boolean
+        default: false
       patch_rekernel:
         description: "Re:Kernel"
         required: false
@@ -223,6 +233,7 @@ jobs:
       ROM_TEXT: "${{ inputs.rom_text }}"
       # Patch switches (rendered as checkboxes in the Run workflow UI)
       SUSFS_ENABLE: ${{ inputs.patch_susfs }}
+      SUSFS_NULLCHECK_ENABLE: ${{ inputs.patch_susfs_nullcheck }}
       REKERNEL_ENABLE: ${{ inputs.patch_rekernel }}
       DROIDSPACES_ENABLE: ${{ inputs.patch_droidspaces }}
       BASEBAND_GUARD_ENABLE: ${{ inputs.patch_baseband_guard }}
@@ -266,6 +277,17 @@ jobs:
           patch -p1 < susfs_fixed_to_4.9.patch
           rm -f susfs_fixed_to_4.9.patch fs/stat.c.rej fs/proc/task_mmu.c.rej
           echo "[+] SUSFS 4.9 fixed hooks applied successfully."
+
+      - name: 🧪 Patch SUSFS 4.9 Null-Bitmap Test
+        if: env.SUSFS_ENABLE == 'true' && env.SUSFS_NULLCHECK_ENABLE == 'true'
+        shell: bash
+        run: |
+          cd $GITHUB_WORKSPACE/device_kernel/
+
+          cp /tmp/Patches/susfs/susfs_nullcheck_to_4.9.patch ./
+          patch -p1 < susfs_nullcheck_to_4.9.patch
+          rm -f susfs_nullcheck_to_4.9.patch
+          echo "[+] SUSFS null-bitmap test patch applied (old_bitmap NULL check)."
 
       - name: 🔗 Patch for no-kprobe
         uses: ./.github/workflows/patch-no-kprobe
