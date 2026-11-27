@@ -109,10 +109,10 @@ runs:
           cd tmp
           7za a -mx9 tmp.zip *
           cd ..
-          cp -fp tmp/tmp.zip ${DEVICE_CODENAME}${ROM_TAG}-$TIME-${{ env.PACK_METHOD }}.zip
+          cp -fp tmp/tmp.zip AnyKernel3-${DEVICE_CODENAME}${ROM_TAG}-$TIME.zip
           rm -rf tmp
 
-          echo "PACK_NAME=${DEVICE_CODENAME}${ROM_TAG}-$TIME-${{ env.PACK_METHOD }}.zip" >> $GITHUB_ENV
+          echo "PACK_NAME=AnyKernel3-${DEVICE_CODENAME}${ROM_TAG}-$TIME.zip" >> $GITHUB_ENV
 
       - name: Make Latest Boot Image
         if: env.PACK_METHOD == 'MKBOOTIMG'
